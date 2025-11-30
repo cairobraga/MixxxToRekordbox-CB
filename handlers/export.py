@@ -38,6 +38,7 @@ def get_track_info(
     out_format: str | None,
     key_type: KeyType,
     export_semaphore: Semaphore,
+<<<<<<< HEAD
 ) -> tuple[TrackContext, BeatGridInfo | None] | None:
     track_info = sql_handlers.get_track_info(track_id)
     if track_info:
@@ -64,10 +65,33 @@ def get_track_info(
         print(f"File not found at {track_location}")
         return None
 
+=======
+) -> tuple[TrackContext, BeatGridInfo | None]:
+    info = sql_handlers.get_track_info(track_id)
+    if info is None:
+        return None, None
+    (
+        samplerate,
+        channels,
+        duration,
+        title,
+        artist,
+        album,
+        genre,
+        bpm,
+        beats,
+        beats_version,
+        key_id,
+        rating,
+        colour,
+        track_location,
+    ) = info
+>>>>>>> 6d3aa62 (make track loading robust against non-existent tracks)
     if out_dir or out_format:
         track_location = change_track_location(
             track_location, out_dir, out_format, export_semaphore
         )
+<<<<<<< HEAD
     if track_location.endswith(".ogg"):
         temp_path = Path.home().absolute() / "temp"
         temp_path.mkdir(exist_ok=True)
@@ -80,6 +104,8 @@ def get_track_info(
         )
         print(f"New track created at: {track_location}")
 
+=======
+>>>>>>> 6d3aa62 (make track loading robust against non-existent tracks)
     return TrackContext(
         id=track_id,
         samplerate=int(samplerate),
@@ -133,6 +159,7 @@ def get_exported_track(
 ) -> ExportedTrack | None:
     if track_id in track_collection:
         return track_collection[track_id]
+<<<<<<< HEAD
 
     track_info = get_track_info(
         track_id, out_dir, out_format, key_type, export_semaphore
@@ -142,6 +169,13 @@ def get_exported_track(
         return None
 
     track_context, beat_grid = track_info
+=======
+    track_context, beat_grid = get_track_info(
+        track_id, out_dir, out_format, key_type, export_semaphore
+    )
+    if track_context is None:
+        return None
+>>>>>>> 6d3aa62 (make track loading robust against non-existent tracks)
     return ExportedTrack(
         id=format_track_id(track_id),
         track_context=track_context,
@@ -173,6 +207,7 @@ def get_data_for_tracks(
         initargs=(db_location,),
     ) as pool:
         return list(
+            el for el in
             tqdm(
                 (
                     track
@@ -193,6 +228,7 @@ def get_data_for_tracks(
                 unit="track",
                 total=len(track_ids),
             )
+            if el is not None
         )
 
 
