@@ -5,8 +5,12 @@ from multiprocessing.synchronize import Semaphore
 from pathlib import Path
 
 from lxml import etree
+<<<<<<< HEAD
 from tqdm import tqdm
 
+=======
+import logging
+>>>>>>> 04dc58a (recover export errors per-list)
 from handlers import sql as sql_handlers
 from handlers.transcode import EXPORT_SEMAPHORE_COUNT, change_track_location
 from models import (
@@ -306,18 +310,21 @@ def export_to_rekordbox_xml(
     for collection in collections:
         collection_id = collection[0]
         collection_name = collection[1]
-        xml_element = append_collection_to_element(
-            collection_id,
-            collection_name,
-            xml_element,
-            export_all,
-            collection_type,
-            out_dir,
-            out_format,
-            key_type,
-            db_location,
-            virtual_out_dir,
-        )
+        try:
+            xml_element = append_collection_to_element(
+                collection_id,
+                collection_name,
+                xml_element,
+                export_all,
+                collection_type,
+                out_dir,
+                out_format,
+                key_type,
+                db_location,
+                virtual_out_dir,
+            )
+        except Exception as e:
+            logging.error('Error exporting playlist %s', collection_name, exc_info=e)
         flush_offset_errors()
         print("")
     with open("rekordbox.xml", "wb") as fd:
